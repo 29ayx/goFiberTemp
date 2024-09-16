@@ -19,11 +19,15 @@ func FindMotherProfileByID(id uint) (*models.Profile, error) {
 // FindMotherProfileByEmail finds a mother profile by the associated user's email
 func FindMotherProfileByEmail(email string) (*models.Profile, error) {
     var profile models.Profile
-    if result := database.DB.Joins("User").Where("users.email = ? AND profiles.profile_owner_type = ?", email, "mother").First(&profile); result.Error != nil {
+    if result := database.DB.
+        Joins("JOIN users ON users.id = profiles.user_id").
+        Where("users.email = ? AND profiles.profile_owner_type = ?", email, "pregnant").
+        First(&profile); result.Error != nil {
         return nil, result.Error
     }
     return &profile, nil
 }
+
 
 // GetMotherProfileByID exposes the FindMotherProfileByID function via API
 func GetMotherProfileByID(c *fiber.Ctx) error {
@@ -74,7 +78,7 @@ func CreateMotherProfile(c *fiber.Ctx) error {
     }
 
     // Ensure the user has the 'mother' role
-    if user.Role != "mother" {
+    if user.Role != "pregnant" {
         return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"error": "User does not have the mother role"})
     }
 
@@ -87,6 +91,7 @@ func CreateMotherProfile(c *fiber.Ctx) error {
 
     // Associate the profile with the user
     profile.UserID = user.ID
+	profile.Email = user.Email
     profile.ProfileOwnerType = "mother"
 
     // Save the profile to the database

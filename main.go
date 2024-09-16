@@ -52,7 +52,7 @@ func main() {
 
 	app.Get("/mother-profile/:id", routes.GetMotherProfileByID)
 	app.Get("/mother-profile", routes.GetMotherProfileByEmail)
-	app.Post("/users/:id/mother-profile", routes.CreateMotherProfile)
+	app.Post("/user/:id/mother-profile", routes.CreateMotherProfile)
 	app.Put("/mother-profile/:id", routes.UpdateMotherProfile)
 	app.Delete("/mother-profile/:id", routes.DeleteMotherProfile)
 
@@ -72,6 +72,9 @@ app.Post("/mother-journal", routes.CreateMotherJournal)              // Create a
 app.Put("/mother-journal/:id", routes.UpdateMotherJournal)           // Update a journal entry by ID
 app.Delete("/mother-journal/:id", routes.DeleteMotherJournal)        // Delete a journal entry by ID
 
+
+app.Post("/doctor-profile", routes.CreateDoctorProfile)
+app.Get("/doctor-profile", routes.GetDoctorProfileByEmail)
 
 	// Start the server
 	log.Fatal(app.Listen(":8000"))
