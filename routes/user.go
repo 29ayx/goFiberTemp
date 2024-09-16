@@ -77,9 +77,15 @@ func GetAllUsers(c *fiber.Ctx) error {
 func GetUser(c *fiber.Ctx) error {
     id := c.Params("id")
     var user models.User
-    if result := database.DB.Preload("Cars").First(&user, id); result.Error != nil {
+
+    log.Println("Fetching user with ID:", id) // Add this line for debugging
+
+    if result := database.DB.First(&user, id); result.Error != nil {
+        log.Println("Error fetching user:", result.Error) // Add this line for debugging
         return c.Status(fiber.StatusNotFound).JSON(fiber.Map{"error": "User not found"})
     }
+
+    log.Println("User found:", user) // Add this line for debugging
     return c.Status(fiber.StatusOK).JSON(user)
 }
 
@@ -129,4 +135,31 @@ func AssignCarToUser(c *fiber.Ctx) error {
     // Save the car to the database
     database.DB.Create(&car)
     return c.Status(fiber.StatusOK).JSON(car)
+}
+
+
+// UpdateUserRole assigns a role to the user
+func UpdateUserRole(c *fiber.Ctx) error {
+    id := c.Params("id")
+    var user models.User
+
+    // Find the user by ID
+    if result := database.DB.First(&user, id); result.Error != nil {
+        return c.Status(fiber.StatusNotFound).JSON(fiber.Map{"error": "User not found"})
+    }
+
+    // Parse the role from the request body
+    role := struct {
+        Role string `json:"role"`
+    }{}
+
+    if err := c.BodyParser(&role); err != nil {
+        return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"error": "Cannot parse role"})
+    }
+
+    // Update the user's role
+    user.Role = role.Role
+    database.DB.Save(&user)
+
+    return c.Status(fiber.StatusOK).JSON(user)
 }

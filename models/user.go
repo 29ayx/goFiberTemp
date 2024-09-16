@@ -6,10 +6,11 @@ import (
 
 type User struct {
     ID        uint      `gorm:"primaryKey" json:"id"`
-    Name      string    `json:"name"`
+    FirstName      string    `json:"firstname"`
+    LastName      string    `json:"lastname"`
     Email     string    `gorm:"unique" json:"email"`
     Password  string    `json:"password"`
-    Cars      []Car     `gorm:"foreignKey:UserID" json:"cars,omitempty"`
+    Role      string    `json:"role"` // "doctor" or "mother"
     CreatedAt time.Time `json:"created_at"`
     UpdatedAt time.Time `json:"updated_at"`
 }
