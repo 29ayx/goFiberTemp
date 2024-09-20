@@ -1,9 +1,10 @@
 package routes
 
 import (
-	"github.com/gofiber/fiber/v2"
-	"myapp/models"
 	"myapp/database"
+	"myapp/models"
+
+	"github.com/gofiber/fiber/v2"
 )
 
 func CreateCar(c *fiber.Ctx) error {

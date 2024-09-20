@@ -1,10 +1,11 @@
 package routes
 
 import (
-	"github.com/gofiber/fiber/v2"
-	"myapp/models"
-	"myapp/database"
 	"log"
+	"myapp/database"
+	"myapp/models"
+
+	"github.com/gofiber/fiber/v2"
 )
 
 func CreateDoctorProfile(c *fiber.Ctx) error {
@@ -12,8 +13,8 @@ func CreateDoctorProfile(c *fiber.Ctx) error {
 	id := c.Params("id")
 	var user models.User
 
-	if result := database.DB.First(&user, id); result.Error !=nil {
-		return c.Status(fiber.StatusNotFound).JSON(fiber.Map{"error":"User not found"})
+	if result := database.DB.First(&user, id); result.Error != nil {
+		return c.Status(fiber.StatusNotFound).JSON(fiber.Map{"error": "User not found"})
 	}
 
 	// if user.Role != "doctor" {
@@ -21,9 +22,9 @@ func CreateDoctorProfile(c *fiber.Ctx) error {
 	// }
 
 	profile := new(models.Doctor)
-	if err:= c.BodyParser(profile); err != nil {
+	if err := c.BodyParser(profile); err != nil {
 		log.Println("Body parsing failed:", err)
-		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"error":"Invalid Input"})
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"error": "Invalid Input"})
 	}
 
 	profile.UserID = user.ID
@@ -32,19 +33,18 @@ func CreateDoctorProfile(c *fiber.Ctx) error {
 
 	if result := database.DB.Create(&profile); result.Error != nil {
 		log.Println("Profile creation failed:", result.Error)
-		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"error":"Profile could not be created"})
+		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"error": "Profile could not be created"})
 	}
 
 	return c.Status(fiber.StatusOK).JSON(profile)
 }
 
-
-func FindDoctorByEmail(email string)(*models.Doctor, error){
+func FindDoctorByEmail(email string) (*models.Doctor, error) {
 	var profile models.Doctor
 	if result := database.DB.
-	Joins("JOIN users ON users.id = doctors.user_id").
-	Where("doctors.email = ? ", email).
-	First(&profile); result.Error != nil{
+		Joins("JOIN users ON users.id = doctors.user_id").
+		Where("doctors.email = ? ", email).
+		First(&profile); result.Error != nil {
 		return nil, result.Error
 	}
 	return &profile, nil
@@ -52,16 +52,16 @@ func FindDoctorByEmail(email string)(*models.Doctor, error){
 
 func GetDoctorProfileByEmail(c *fiber.Ctx) error {
 	email := c.Query("email")
-	if email == ""{
+	if email == "" {
 		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
-			"error":"Email query parameter is required",
+			"error": "Email query parameter is required",
 		})
 	}
 
 	profile, err := FindDoctorByEmail(email)
-	if err != nil{
+	if err != nil {
 		return c.Status(fiber.StatusNotFound).JSON(fiber.Map{
-			"error":"Doctor account not found",
+			"error": "Doctor account not found",
 		})
 	}
 
