@@ -21,8 +21,7 @@ func FindMotherProfileByID(id uint) (*models.Profile, error) {
 func FindMotherProfileByEmail(email string) (*models.Profile, error) {
 	var profile models.Profile
 	if result := database.DB.
-		Joins("JOIN users ON users.id = profiles.user_id").
-		Where("users.email = ? AND profiles.profile_owner_type = ?", email, "pregnant").
+		Where("profiles.email = ? ", email).
 		First(&profile); result.Error != nil {
 		return nil, result.Error
 	}

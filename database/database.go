@@ -18,5 +18,5 @@ func Connect() {
     }
 
     // Auto migrate database models
-    DB.AutoMigrate(&models.User{}, &models.Car{}, &models.Profile{}, &models.ForumPost{}, &models.DailyEntry{}, &models.Doctor{})
+    DB.AutoMigrate(&models.User{}, &models.Car{}, &models.Profile{}, &models.ForumPost{}, &models.DailyEntry{}, &models.Doctor{}, &models.AdminPost{} )
 }

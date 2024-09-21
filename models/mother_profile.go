@@ -8,8 +8,12 @@ type Profile struct {
 	ID               uint   `gorm:"primaryKey" json:"id"`
 	UserID           uint   `json:"user_id"`
 	ProfileOwnerType string `json:"profile_owner_type"`
+	PrefferedName    string `json:"preffered_name"`
+
+
 
 	// Flattened personal details
+	Verified       string `json:"verified"`
 	Email       string `json:"email"`
 	Phone       string `json:"phone"`
 	DateOfBirth string `json:"date_of_birth"`

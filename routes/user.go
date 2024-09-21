@@ -54,16 +54,67 @@ func CreateUser(c *fiber.Ctx) error {
 		return c.Status(fiber.StatusConflict).JSON(fiber.Map{"error": "Email already exists"})
 	}
 
-	// No password hashing, store the password as plain text directly
-	// It's already parsed in user.Password from the BodyParser function
-
 	// Save the new user to the database
 	if result := database.DB.Create(&user); result.Error != nil {
 		log.Println("User creation failed:", result.Error)
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"error": "User could not be created"})
 	}
 
+	// After user creation, check if the role is 'pregnant' to create the profile
+	if user.Role == "pregnant" {
+		if err := createMotherProfile(user); err != nil {
+			log.Println("Profile creation failed:", err)
+			return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"error": "Profile creation failed"})
+		}
+	}
+
+	if user.Role == "doctor" {
+		if err := createMotherProfile(user); err != nil {
+			log.Println("Profile creation failed:", err)
+			return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"error": "Profile creation failed"})
+		}
+	}
+
+
+
 	return c.Status(fiber.StatusOK).JSON(user)
+}
+
+
+func createDoctorProfile(user *models.User) error {
+	// Initialize a new profile struct
+	doctor := &models.Doctor{
+		Email:            user.Email,
+		FirstName:	user.FirstName,
+		Phone: user.Phone,
+		AccStatus : "pending",
+		ProfileOwnerType: "doctor",
+	}
+
+	// Save the profile to the database
+	if result := database.DB.Create(doctor); result.Error != nil {
+		log.Println("Profile creation failed:", result.Error)
+		return result.Error
+	}
+
+	return nil
+}
+func createMotherProfile(user *models.User) error {
+	// Initialize a new profile struct
+	profile := &models.Profile{
+		Email:            user.Email,
+		PrefferedName:	user.FirstName,
+		Phone: user.Phone,
+		ProfileOwnerType: "mother",
+	}
+
+	// Save the profile to the database
+	if result := database.DB.Create(profile); result.Error != nil {
+		log.Println("Profile creation failed:", result.Error)
+		return result.Error
+	}
+
+	return nil
 }
 
 func GetAllUsers(c *fiber.Ctx) error {

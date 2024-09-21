@@ -10,6 +10,7 @@ type Doctor struct {
 	Email            string `json:"email"`
 	AccStatus        string `json:"account_status"`
 	ProfileOwnerType string `json:"profile_owner_type"`
+	Phone 		  string `json:"phone"`
 
 	PracticeNo string `json:"practice_no"`
 

@@ -76,6 +76,11 @@ func main() {
 	app.Post("/doctor-profile", routes.CreateDoctorProfile)
 	app.Get("/doctor-profile", routes.GetDoctorProfileByEmail)
 
+
+	// Protected admin post routes
+	app.Get("/admin-posts", routes.GetAdminPosts)
+	app.Post("/admin-post", routes.CreateAdminPost)
+
 	// Start the server
 	log.Fatal(app.Listen(":8000"))
 }

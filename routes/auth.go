@@ -2,7 +2,7 @@ package routes
 
 import (
 	"log"
-	"time"
+	// "time"
 
 	"github.com/gofiber/fiber/v2"
 	"github.com/golang-jwt/jwt/v5"
@@ -38,7 +38,7 @@ func Login(c *fiber.Ctx) error {
 	// Generate JWT token
 	claims := jwt.MapClaims{
 		"user_id": user.ID,
-		"exp":     time.Now().Add(time.Hour * 72).Unix(), // Token expiration in 72 hours
+		// "exp":     time.Now().Add(time.Hour * 72).Unix(), // Token expiration in 72 hours
 	}
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
 
