@@ -26,6 +26,32 @@ func FindForumByEmail(email string) ([]models.ForumPost, error) {
 	return forumPosts, nil
 }
 
+func FindForumByCategory(category string) ([]models.ForumPost, error) {
+	var forumPosts []models.ForumPost
+	if result := database.DB.Where("category= ?", category).Find(&forumPosts); result.Error != nil {
+		return nil, result.Error
+	}
+
+	for i, post := range forumPosts {
+		profile, err := FindMotherProfileByEmail(post.Email)
+		if err != nil {
+			return nil, err
+		}
+		forumPosts[i].Name = profile.PrefferedName 
+	}
+
+	return forumPosts, nil
+}
+
+
+// func FindForumByCategory(category string) ([]models.ForumPost, error) {
+// 	var forumPosts []models.ForumPost
+// 	if result := database.DB.Where("category= ?", category).Find(&forumPosts); result.Error != nil {
+// 		return nil, result.Error
+// 	}
+// 	return forumPosts, nil
+// }
+
 // GetForumByID exposes the FindForumByID function via API
 func GetForumByID(c *fiber.Ctx) error {
 	id, err := c.ParamsInt("id")
@@ -69,6 +95,24 @@ func GetForumByEmail(c *fiber.Ctx) error {
 	}
 
 	forumPosts, err := FindForumByEmail(email)
+	if err != nil {
+		return c.Status(fiber.StatusNotFound).JSON(fiber.Map{
+			"error": "Forum posts not found",
+		})
+	}
+
+	return c.Status(fiber.StatusOK).JSON(forumPosts)
+}
+
+func GetForumByCategory(c *fiber.Ctx) error {
+	category := c.Query("category")
+	if category == "" {
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+			"error": "Category query parameter is required",
+		})
+	}
+
+	forumPosts, err := FindForumByCategory(category)
 	if err != nil {
 		return c.Status(fiber.StatusNotFound).JSON(fiber.Map{
 			"error": "Forum posts not found",

@@ -17,8 +17,30 @@ func FindUserByEmail(email string) (*models.User, error) {
 	return &user, nil
 }
 
+
 // GetUserByEmail exposes the FindUserByEmail function via an API endpoint
 func GetUserByEmail(c *fiber.Ctx) error {
+	// Get the email from the query parameter
+	email := c.Query("email")
+	if email == "" {
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+			"error": "Email query parameter is required",
+		})
+	}
+
+	// Find the user by email
+	user, err := FindUserByEmail(email)
+	if err != nil {
+		return c.Status(fiber.StatusNotFound).JSON(fiber.Map{
+			"error": "User not found",
+		})
+	}
+
+	// Return the user details
+	return c.Status(fiber.StatusOK).JSON(user)
+}
+
+func GetUserPublicDetailByEmail(c *fiber.Ctx) error {
 	// Get the email from the query parameter
 	email := c.Query("email")
 	if email == "" {
@@ -69,7 +91,7 @@ func CreateUser(c *fiber.Ctx) error {
 	}
 
 	if user.Role == "doctor" {
-		if err := createMotherProfile(user); err != nil {
+		if err := createDoctorProfile(user); err != nil {
 			log.Println("Profile creation failed:", err)
 			return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"error": "Profile creation failed"})
 		}
@@ -86,6 +108,7 @@ func createDoctorProfile(user *models.User) error {
 	doctor := &models.Doctor{
 		Email:            user.Email,
 		FirstName:	user.FirstName,
+		LastName: user.LastName,
 		Phone: user.Phone,
 		AccStatus : "pending",
 		ProfileOwnerType: "doctor",

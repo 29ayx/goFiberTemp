@@ -12,6 +12,7 @@ type Profile struct {
 
 
 
+
 	// Flattened personal details
 	Verified       string `json:"verified"`
 	Email       string `json:"email"`

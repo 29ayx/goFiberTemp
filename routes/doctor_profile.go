@@ -42,12 +42,32 @@ func CreateDoctorProfile(c *fiber.Ctx) error {
 func FindDoctorByEmail(email string) (*models.Doctor, error) {
 	var profile models.Doctor
 	if result := database.DB.
-		Joins("JOIN users ON users.id = doctors.user_id").
 		Where("doctors.email = ? ", email).
 		First(&profile); result.Error != nil {
 		return nil, result.Error
 	}
 	return &profile, nil
+}
+
+func UpdateDoctorProfile(c *fiber.Ctx) error {
+	id := c.Params("id")
+	var profile models.Doctor
+
+	if result := database.DB.First(&profile, id); result.Error != nil {
+		return c.Status(fiber.StatusNotFound).JSON(fiber.Map{"error": "Doctor profile not found"})
+	}
+
+	if err := c.BodyParser(&profile); err != nil {
+		log.Println("Body parsing failed:", err)
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"error": "Invalid input"})
+	}
+
+	if result := database.DB.Save(&profile); result.Error != nil {
+		log.Println("Profile update failed:", result.Error)
+		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"error": "Profile could not be updated"})
+	}
+
+	return c.Status(fiber.StatusOK).JSON(profile)
 }
 
 func GetDoctorProfileByEmail(c *fiber.Ctx) error {

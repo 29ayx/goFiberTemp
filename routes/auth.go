@@ -17,6 +17,8 @@ func Login(c *fiber.Ctx) error {
 		Password string `json:"password"`
 	}
 
+
+
 	// Parse the login input
 	if err := c.BodyParser(&input); err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"error": "Invalid input"})
@@ -24,6 +26,7 @@ func Login(c *fiber.Ctx) error {
 
 	// Find the user by email
 	user, err := FindUserByEmail(input.Email)
+
 	if err != nil || user == nil {
 		log.Println("User not found:", input.Email)
 		return c.Status(fiber.StatusUnauthorized).JSON(fiber.Map{"error": "Invalid email or password"})
@@ -48,5 +51,5 @@ func Login(c *fiber.Ctx) error {
 	}
 
 	// Return the token
-	return c.JSON(fiber.Map{"token": tokenString})
+	return c.JSON(fiber.Map{"token": tokenString, "role": user.Role})
 }

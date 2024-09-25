@@ -58,7 +58,8 @@ func main() {
 	app.Delete("/mother-profile/:id", routes.DeleteMotherProfile)
 
 	app.Get("/forum/:id", routes.GetForumByID) // Get forum post by ID
-	app.Get("/forum", routes.GetForumByEmail)
+	// app.Get("/forum", routes.GetForumByEmail)
+	app.Get("/forum", routes.GetForumByCategory)
 	app.Get("/forums", routes.GetAllForums)          // Get forum posts by email
 	app.Post("/forum", routes.CreateForumPost)       // Create a new forum post
 	app.Put("/forum/:id", routes.UpdateForumPost)    // Update a forum post by ID
@@ -75,12 +76,20 @@ func main() {
 
 	app.Post("/doctor-profile", routes.CreateDoctorProfile)
 	app.Get("/doctor-profile", routes.GetDoctorProfileByEmail)
+	app.Put("/doctor-profile/:id", routes.UpdateDoctorProfile)
+
+	app.Post("/submitappointment", routes.CreateAppointment) //Create consultation request
+	app.Get("/doc/getappbyspec/:specialist", routes.GetAppointmentsBySpecialist) //Gets all the appointments by specialist
+	app.Get("/doc/appointment/:id", routes.GetAppointmentById) // Gets the appointment by id
+	//Gets the appointment by id
 
 
 	// Protected admin post routes
-	app.Get("/admin-posts", routes.GetAdminPosts)
-	app.Post("/admin-post", routes.CreateAdminPost)
+	app.Get("/blog-posts", routes.GetAdminPosts)
+	app.Post("/blog-post", routes.CreateAdminPost)
 
 	// Start the server
+
+
 	log.Fatal(app.Listen(":8000"))
 }
