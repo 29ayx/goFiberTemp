@@ -6,6 +6,7 @@ import (
 	"myapp/models"
 
 	"github.com/gofiber/fiber/v2"
+	 "github.com/golang-jwt/jwt/v4"
 )
 
 // FindUserByEmail checks if a user with the given email exists
@@ -15,6 +16,37 @@ func FindUserByEmail(email string) (*models.User, error) {
 		return nil, result.Error
 	}
 	return &user, nil
+}
+
+
+func GetUserFromToken(c *fiber.Ctx) error {
+    // Extract the token stored in the context by the JWT middleware
+    userTokenInterface := c.Locals("user")
+    userToken, ok := userTokenInterface.(*jwt.Token)
+    if !ok {
+        return c.Status(fiber.StatusUnauthorized).JSON(fiber.Map{"error": "Invalid token"})
+    }
+
+    // Extract claims from the token
+    claims, ok := userToken.Claims.(jwt.MapClaims)
+    if !ok {
+        return c.Status(fiber.StatusUnauthorized).JSON(fiber.Map{"error": "Invalid token claims"})
+    }
+
+    // Extract email from claims
+    email, ok := claims["email"].(string)
+    if !ok {
+        return c.Status(fiber.StatusUnauthorized).JSON(fiber.Map{"error": "Email not found in token"})
+    }
+
+    // Find the user by email using the FindUserByEmail function
+    user, err := FindUserByEmail(email)
+    if err != nil {
+        return c.Status(fiber.StatusNotFound).JSON(fiber.Map{"error": "User not found"})
+    }
+
+    // Return the user details as JSON
+    return c.Status(fiber.StatusOK).JSON(user)
 }
 
 

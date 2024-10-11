@@ -43,6 +43,7 @@ func main() {
 	}))
 
 	// Protected user routes
+	app.Get("/getuser", routes.GetUserFromToken)
 	app.Get("/users", routes.GetAllUsers)
 	app.Get("/users/:id", routes.GetUser)
 	app.Put("/users/:id", routes.UpdateUser)

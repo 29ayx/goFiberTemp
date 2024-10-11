@@ -12,8 +12,10 @@ require (
 )
 
 require (
+	github.com/MicahParks/keyfunc/v2 v2.0.3 // indirect
 	github.com/andybalholm/brotli v1.0.5 // indirect
 	github.com/davecgh/go-spew v1.1.1 // indirect
+	github.com/gofiber/jwt/v4 v4.0.0 // indirect
 	github.com/golang-jwt/jwt/v4 v4.5.0 // indirect
 	github.com/google/uuid v1.5.0 // indirect
 	github.com/jackc/pgpassfile v1.0.0 // indirect
